@@ -9,17 +9,19 @@ def home():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    error = None
     if request.method == 'POST':
         identifier = request.form['username']
         password = request.form['password']
         if verify_login(identifier, password):
-            return render_template('dashboard.html')
+            return render_template('dashboard.html', username=identifier)
         else:
-            return "Invalid credentials", 401
-    return render_template('login.html')
+            error = "⚠️ Invalid username/email or password."
+    return render_template('login.html', error=error)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
+    error = None
     if request.method == 'POST':
         username = request.form['username']
         email = request.form['email']
@@ -28,8 +30,8 @@ def signup():
         if result == "success":
             return redirect(url_for('login'))
         else:
-            return result, 400
-    return render_template('signup.html')
+            error = f"⚠️ {result}"
+    return render_template('signup.html', error=error)
 
 if __name__ == '__main__':
     app.run(debug=True)
